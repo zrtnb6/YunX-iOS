@@ -1,4 +1,4 @@
-name: Build iOS IPA
+name: Build iOS IPA (Liquid Glass / Xcode 26)
 
 on:
   push:
@@ -17,13 +17,23 @@ permissions:
 
 jobs:
   build:
-    name: Build unsigned IPA
-    runs-on: macos-15
-    timeout-minutes: 45
+    name: Build unsigned IPA (Xcode 26 / iOS 26 SDK)
+    # macos-26 runner ships Xcode 26.x with the iOS 26 SDK.
+    # Linking against the iOS 26 SDK is what gives the app Liquid Glass
+    # automatically when run on iOS 26 — no SwiftUI code changes required.
+    runs-on: macos-26
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Select Xcode 26
+        run: |
+          # On the macos-26 image /Applications/Xcode.app symlinks to Xcode 26.x.
+          sudo xcode-select -s /Applications/Xcode.app
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
 
       - name: Show toolchain
         run: |
